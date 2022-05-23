@@ -1,0 +1,67 @@
+runner: iBOTRunner
+
+arch: "vit_base"
+model: "ibot_vit_base"
+patch_size: 16
+window_size: 7
+out_dim: 8192
+patch_out_dim: 8192
+drop_path_rate: 0.1
+
+global_crops_number: 2
+global_crops_scale: [0.32, 1.0]
+local_crops_number: 10
+local_crops_scale: [0.05, 0.32]
+
+student_temperature: 0.1 
+cls_temperature: 0.07
+patch_temperature: 0.07
+
+warmup_teacher_cls_temperature: 0.04
+warmup_teacher_patch_temperature: 0.04
+warmup_teacher_temperature_epochs: 50
+
+center_momentum: 0.9
+center_momentum2: 0.9
+teacher_momentum: 0.996
+
+lambda1: 1.0
+lambda2: 1.0
+
+norm_last_layer: True
+norm_in_head: null
+act_in_head: "gelu"
+shared_head: True
+shared_head_teacher: True
+
+masked_im_modeling: True
+pred_ratio: [0, 0.3]
+pred_ratio_var: [0, 0.2]
+pred_shape: block
+pred_start_epoch: 0
+
+use_fp16: True
+weight_decay: 0.04
+weight_decay_end: 0.4
+clip_grad: 0.3
+batch_size: 32 # 4 nodes
+epochs: 400
+freeze_last_layer: 3
+lr: 0.00075
+warmup_epochs: 10
+min_lr: 2e-6
+optimizer: adamw
+accum_iter: 1
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+output_dir: "./experiments/pretrain/baseline/ibot_vit_base_400eps/"
+
+autoresume: True
+resume: null
+seed: 0
+num_workers: 10
+
+log_interval: 10
+save_interval: 10
+
+dist_url: "env://"

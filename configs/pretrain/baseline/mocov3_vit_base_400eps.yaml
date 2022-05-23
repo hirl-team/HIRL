@@ -1,0 +1,40 @@
+runner: MoCoV3Runner
+
+arch: vit_base
+
+batch_size: 64 # 64 * 64 = 4096
+epochs: 400
+accum_iter: 1
+
+model: "mocov3_vit_base_single_crop"
+local_views_sum: True
+moco_momentum: 0.99
+moco_momentum_cosine: True
+
+multi_crop: False
+global_crops_number: 2
+global_crops_scale: [0.08, 1.0]
+local_crops_number: 0 
+local_crops_scale: [0, 0.08] #TODO
+
+optimizer: "adamw"
+lr: 1.0e-4
+min_lr: 0.
+momentum: 0.9
+weight_decay: 0.1
+warmup_epochs: 40
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+
+output_dir: "./experiments/pretrain/baseline/mocov3_vit_base_400eps/"
+
+autoresume: True
+resume: null
+seed: 0
+num_workers: 10
+
+log_interval: 10
+save_interval: 10
+use_fp16: True
+
+dist_url: "env://"

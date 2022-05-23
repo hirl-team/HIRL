@@ -1,0 +1,71 @@
+runner: SemiSupRunner
+labels_perc: 1
+
+arch: resnet50
+batch_size: 32 
+epochs: 70
+accum_iter: 1
+
+patch_size: 16
+window_size: 7
+drop_path_rate: 0.1
+
+lr: 0.02
+lr_last_layer: 0.2
+min_lr: 0.
+warmup_epochs: 0.
+
+cos: False
+schedule: [30, 60]
+gamma: 0.1
+
+optimizer:
+  name: "SGD"
+  params:
+    weight_decay: 0.0
+    momentum: 0.9
+
+input_size: 224
+
+use_syncbn: True
+
+timm_aug: False
+
+mixup: 0.8
+cutmix: 1.0
+cutmix_minmax: null
+mixup_prob: 1.0
+mixup_switch_prob: 0.5
+mixup_mode: "batch"
+
+reprob: 0.25
+color_jitter: null
+auto_aug_policy: "rand-m9-mstd0.5-inc1"
+smoothing: 0.1
+remode: "pixel"
+recount: 1
+resplit: False
+
+dist_eval: True
+trunc_normal: False
+
+use_mean_pooling: False
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+
+output_dir: "./experiments/downstream/semisup/mocov2/mocov2_resnet50_200eps_1percent/"
+
+
+autoresume: True
+pretrained: ""
+backbone_prefix: "backbone"
+resume: null
+seed: 0
+num_workers: 10
+num_classes: 1000
+
+log_interval: 50
+save_interval: 10
+use_fp16: True
+
+dist_url: "env://"

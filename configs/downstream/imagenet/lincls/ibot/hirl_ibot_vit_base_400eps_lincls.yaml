@@ -1,0 +1,53 @@
+runner: LinclsRunner
+
+arch: vit_base
+arch_kwargs:
+  sincos_pos_emb: False
+  mocov3_init: False
+
+batch_size: 128 
+epochs: 100
+accum_iter: 1
+
+patch_size: 16
+window_size: 7
+drop_path_rate: 0.0
+n_last_blocks: 1 
+
+lr: 0.002
+min_lr: 0
+warmup_epochs: 0
+
+optimizer:
+  name: "SGD"
+  params:
+    weight_decay: 0.
+    momentum: 0.9
+  use_lars: [True, False]
+
+cos: True
+warmup_epochs: 0
+
+
+trunc_normal: False
+use_mean_pooling: False
+dist_eval: True
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+
+output_dir: "./experiments/downstream/lincls/ibot/hirl_ibot_vit_base_400eps/"
+
+
+autoresume: True
+pretrained: ""
+backbone_prefix: "model.backbone"
+resume: null
+seed: 0
+num_workers: 10
+num_classes: 1000
+
+log_interval: 10
+save_interval: 10
+use_fp16: False
+
+dist_url: "env://"

@@ -1,0 +1,48 @@
+runner: LinclsRunner
+
+arch: resnet50
+batch_size: 512 
+epochs: 100
+accum_iter: 1
+
+patch_size: 16
+window_size: 7
+drop_path_rate: 0.1
+
+
+cos: True
+lr: 0.1
+min_lr: 0.
+warmup_epochs: 0
+
+
+optimizer:
+  name: "SGD"
+  params:
+    weight_decay: 0.
+    momentum: 0.9
+  use_lars: True
+
+
+trunc_normal: True
+use_mean_pooling: True
+dist_eval: False
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+
+output_dir: "./experiments/downstream/lincls/simsiam/simsiam_resnet50_200eps/"
+
+
+autoresume: True
+pretrained: ""
+backbone_prefix: "backbone"
+resume: null
+seed: 0
+num_workers: 10
+num_classes: 1000
+
+log_interval: 10
+save_interval: 10
+use_fp16: False
+
+dist_url: "env://"

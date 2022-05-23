@@ -1,0 +1,35 @@
+runner: MoCoRunner
+
+arch: resnet50
+
+batch_size: 32
+epochs: 200
+accum_iter: 1
+
+model: "moco_resnet50_single_crop"
+
+multi_crop: False
+nmb_crops: [2, 1, 1, 1, 1]
+size_crops: [224, 192, 160, 128, 96]
+min_scale_crops: [0.2, 0.172, 0.143, 0.114, 0.086]
+max_scale_crops: [1.0, 0.86, 0.715, 0.571, 0.429]
+
+lr: 0.03
+min_lr: 0.
+momentum: 0.9
+weight_decay: 1e-4
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+
+output_dir: "./experiments/pretrain/baseline/mocov2_resnet50_200eps/"
+
+autoresume: True
+resume: null
+seed: 0
+num_workers: 10
+
+log_interval: 10
+save_interval: 10
+use_fp16: False
+
+dist_url: "env://"
