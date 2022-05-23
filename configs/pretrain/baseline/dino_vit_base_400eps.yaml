@@ -1,0 +1,55 @@
+runner: DINORunner
+
+arch: "vit_base"
+model: "dino_vit_base"
+patch_size: 16
+window_size: 7
+out_dim: 65536
+
+drop_path_rate: 0.1
+
+global_crops_number: 2
+global_crops_scale: [0.25, 1.0]
+local_crops_number: 10
+local_crops_scale: [0.05, 0.25]
+
+student_temperature: 0.1 
+cls_temperature: 0.07
+patch_temperature: 0.07
+
+warmup_teacher_cls_temperature: 0.04
+warmup_teacher_temperature_epochs: 50
+
+center_momentum: 0.9
+teacher_momentum: 0.996
+
+
+norm_last_layer: True
+norm_in_head: null
+act_in_head: "gelu"
+
+use_fp16: True
+weight_decay: 0.04
+weight_decay_end: 0.4
+clip_grad: 0.3
+batch_size: 32 
+epochs: 400
+freeze_last_layer: 3
+lr: 0.00075
+warmup_epochs: 10
+min_lr: 2.0e-6 
+optimizer: adamw
+accum_iter: 1
+
+data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
+output_dir: "./experiments/pretrain/baseline/dino_vit_base_400eps/"
+
+autoresume: True
+resume: null
+seed: 0
+num_workers: 10
+
+log_interval: 10
+save_interval: 10
+
+dist_url: "env://"
