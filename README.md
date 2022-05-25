@@ -1,6 +1,7 @@
 # HIRL: A General Framework for Hierarchical Image Representation Learning
 
-This repository provides the PyTorch implementation of *HIRL: A General Framework for Hierarchical Image Representation Learning* and the re-implementations of multiple superior image self-supervised learning (SSL) methods. This repository contains complete source code and model weights to reproduce the results in the paper. 
+This repository provides the PyTorch implementation of the paper [HIRL: A General Framework for Hierarchical Image Representation Learning](https://arxiv.org/pdf/xxx.pdf) and the re-implementations of multiple superior image self-supervised learning (SSL) methods. 
+This repository contains complete source code and model weights to reproduce the results in the paper. 
 
 <p align="center">
   <img src="resources/framework.png" /> 
@@ -11,6 +12,10 @@ It can be flexibly combined with off-the-shelf image SSL approaches and improve 
 We employ three representative CNN based SSL methods and three representative Vision Transformer based SSL methods as baselines. 
 After adapted to the HIRL framework, the effectiveness of all six baseline methods are improved on diverse downstream tasks. 
 
+**Note**: To minimize the dependencies required to reproduce our results on classification-related downstream tasks, 
+we put the source code of two transfer learning tasks (object detection and instance segmentation on COCO) in the [det-seg](https://github.com/hirl-team/HIRL/tree/det-seg) branch.
+Please move to that branch for reproducing the results on these two tasks.
+
 ## Roadmap
 - [2022/05/26] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
 
@@ -18,32 +23,6 @@ After adapted to the HIRL framework, the effectiveness of all six baseline metho
 - [ ] Incorporate more baseline image SSL methods in this codebase, e.g., CAE, MAE, BEiT and SimMIM.
 - [ ] Adapt more baselines into the HIRL framework, e.g., HIRL-CAE, HIRL-MAE, HIRL-BEiT and HIRL-SimMIM.  
 - [ ] Explore other ways to learn hierarchical image representations, except for semantic path discrimination.
-
-## Installation
-This repository is officially tested with the following environments:
-- Linux
-- Python 3.6+
-- PyTorch 1.10.0
-- CUDA 11.3
-
-The environment could be prepared in the following steps:
-1. Create an virtual environment with conda:
-```
-conda create -n hirl python=3.7.3 -y
-conda activate hirl
-```
-2. Install PyTorch with the [official instructions](https://pytorch.org/). For example:
-```
-conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
-```
-3. Install dependencies:
-```
-## install apex for LARC
-pip install git+https://github.com/NVIDIA/apex \
-    --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"
-## install other dependencies
-pip install -r requirements.txt
-```
 
 ## Benchmark and Model Zoo
 | Method | Arch. | Epochs | Batch Size | KNN | Linear | Fine-tune | Url | Config |
@@ -62,6 +41,32 @@ pip install -r requirements.txt
 | HIRL-DINO | ViT-B/16 | 400 | 1024 | 76.84 | 78.32 | 83.24 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_dino_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_dino_vit_base_400eps.yaml) |
 | iBOT | ViT-B/16 | 400 | 1024 | 76.64 | 79.00 | 82.47 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/ibot_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/ibot_vit_base_400eps.yaml) |
 | HIRL-iBOT | ViT-B/16 | 400 | 1024 | 77.49 | 79.36 | 83.37 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_ibot_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_ibot_vit_base_400eps.yaml) |
+
+## Installation
+This repository is officially tested with the following environments:
+- Linux
+- Python 3.6+
+- PyTorch 1.10.0
+- CUDA 11.3
+
+The environment could be prepared in the following steps:
+1. Create a virtual environment with conda:
+```
+conda create -n hirl python=3.7.3 -y
+conda activate hirl
+```
+2. Install PyTorch with the [official instructions](https://pytorch.org/). For example:
+```
+conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
+```
+3. Install dependencies:
+```
+## install apex for LARC
+pip install git+https://github.com/NVIDIA/apex \
+    --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"
+## install other dependencies
+pip install -r requirements.txt
+```
 
 ## Usage
 
@@ -114,7 +119,7 @@ python3 launch.py --launch ./tools/train.py -c configs/pretrain/hirl/hirl_mocov2
 pipeline.num_mlp_layer=3 output_dir=./experiments/pretrain/hirl/mocov2_3layers/
 ```
 
-All the pre-training configuration files are in `./configs/pretrain/`. To reproduce the pre-training, please follow the corresponding config file. It is also straight-forward use customized config files. Suppose the customized config file is stored in `./customized_configs/custom_mocov2.yaml`, the experiment could be launched by :
+All the pre-training configuration files are in `./configs/pretrain/`. To reproduce the pre-training, please follow the corresponding config file. It is also straight-forward to use customized config files. Suppose the customized config file is stored in `./customized_configs/custom_mocov2.yaml`, the experiment could be launched by :
 ```
 python3 launch.py --launch ./tools/train.py -c ./customized_configs/custom_mocov2.yaml
 ```
@@ -135,7 +140,9 @@ python3 launch.py --nn 2 --nr 1 --port [port] -ma [address of node 0] --launch .
 
 
 ## Evaluation
-We provide two independent scripts for ImageNet KNN and unsupervised clustering evaluation. For downstream evaluation with training process, use `./tools/train.py` with specific configs. In most case, the only argument requires is `--pretrained`.
+We provide two independent scripts for KNN and unsupervised clustering evaluation on ImageNet. 
+For downstream evaluation with training process, you can use `./tools/train.py` with specific configs. 
+In most case, the only required argument is `--pretrained`.
 
 ### KNN evaluation 
 Perform KNN evaluation on a pretrained model:
@@ -145,7 +152,7 @@ python3 launch.py --launch ./eval_common/eval_knn.py --backbone_prefix backbone 
 *Note*: set `--backbone_prefix model.backbone` for HIRL based models. Set `--arch vit_base` for MoCo v3, DINO and iBOT.
 
 ### Linear classification
-Perform ImageNet linear classification based on a pretrained model (eg., MoCo v2):
+Perform ImageNet linear classification based on a pretrained model (e.g., MoCo v2):
 ```
 python3 launch.py --launch ./tools/train.py \
 -c configs/downstream/imagenet/lincls/mocov2/mocov2_resnet50_200eps_lincls.yaml \
@@ -159,7 +166,7 @@ pretrained=[pretrained model file in .pth]
 ```
 
 ### Fine-tuning
-Perform ImageNet fine-tuning based on a pretrained model (eg., MoCo v2):
+Perform ImageNet fine-tuning based on a pretrained model (e.g., MoCo v2):
 ```
 python3 launch.py --launch ./tools/train.py \
 -c configs/downstream/imagenet/finetune/mocov2/mocov2_resnet50_200eps_finetune.yaml \
@@ -172,7 +179,7 @@ python3 launch.py --launch ./tools/train.py \
 pretrained=[pretrained model file in .pth]
 ```
 ### Semi-supervised learning
-Perform ImageNet semi-supervised learning based on a pretrained model (eg., MoCo v2):
+Perform ImageNet semi-supervised learning based on a pretrained model (e.g., MoCo v2):
 ```
 python3 launch.py --launch ./tools/train.py \
 -c configs/downstream/imagenet/semisup/mocov2/mocov2_resnet50_200eps_semisup_1percent.yaml \
@@ -186,7 +193,7 @@ pretrained=[pretrained model file in .pth]
 ```
 
 ### Transfer learning
-Perform Places205 fine-tuning based on a pretrained model (eg., MoCo v2):
+Perform Places205 fine-tuning based on a pretrained model (e.g., MoCo v2):
 ```
 python3 launch.py --launch ./tools/train.py \
 -c configs/downstream/places205/finetune/mocov2/mocov2_resnet50_200eps_finetune_places205.yaml \
@@ -211,6 +218,18 @@ See [det-seg](https://github.com/hirl-team/HIRL/tree/det-seg) branch.
 
 ## License
 This repository is released under the MIT license as in the [LICENSE](LICENSE) file.
+
+## Citation
+
+If you find this repository useful in your research, please cite the following paper:
+```
+@article{xu2022hirl,
+  title={HIRL: A General Framework for Hierarchical Image Representation Learning},
+  author={Xu, Minghao and Guo, Yuanfan and Zhu, Xuanyu and Li, Jiawen and Sun, Zhenbang and Tang, Jian and Xu, Yi and Ni, Bingbing},
+  journal={arXiv preprint arXiv:2205.xxx},
+  year={2022}
+}
+```
 
 ## Acknowledgements
 The baseline methods in this codebase are based on the following open-resource projects. We would like to thank the authors for releasing the source code.
