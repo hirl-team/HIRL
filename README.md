@@ -49,8 +49,8 @@ This repository is officially tested with the following environments:
 The environment could be prepared in the following steps:
 1. Create a virtual environment with conda:
 ```
-conda create -n hirl python=3.7.3 -y
-conda activate hirl
+conda create -n hirl-det-seg python=3.7.3 -y
+conda activate hirl-det-seg
 ```
 2. Install PyTorch with the [official instructions](https://pytorch.org/). For example:
 ```
@@ -58,9 +58,6 @@ conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit
 ```
 3. Install dependencies:
 ```
-## install apex for LARC
-pip install git+https://github.com/NVIDIA/apex \
-    --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"
 ## install other dependencies
 pip install -r requirements.txt
 ```
