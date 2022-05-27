@@ -1,6 +1,6 @@
 # HIRL: A General Framework for Hierarchical Image Representation Learning
 
-This repository provides the PyTorch implementation of the paper [HIRL: A General Framework for Hierarchical Image Representation Learning](https://arxiv.org/pdf/xxx.pdf) and the re-implementations of multiple superior image self-supervised learning (SSL) methods. 
+This repository provides the PyTorch implementation of the paper [HIRL: A General Framework for Hierarchical Image Representation Learning](https://arxiv.org/pdf/2205.13159.pdf) and the re-implementations of multiple superior image self-supervised learning (SSL) methods. 
 This repository contains complete source code and model weights to reproduce the results in the paper. 
 
 <p align="center">
@@ -17,7 +17,7 @@ we put the source code of two transfer learning tasks (object detection and inst
 Please move to that branch for reproducing the results on these two tasks.
 
 ## Roadmap
-- [2022/05/26] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
+- [2022/05/27] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
 
 ## TODO
 - [ ] Incorporate more baseline image SSL methods in this codebase, e.g., CAE, MAE, BEiT and SimMIM.
@@ -226,7 +226,7 @@ If you find this repository useful in your research, please cite the following p
 @article{xu2022hirl,
   title={HIRL: A General Framework for Hierarchical Image Representation Learning},
   author={Xu, Minghao and Guo, Yuanfan and Zhu, Xuanyu and Li, Jiawen and Sun, Zhenbang and Tang, Jian and Xu, Yi and Ni, Bingbing},
-  journal={arXiv preprint arXiv:2205.xxx},
+  journal={arXiv preprint arXiv:2205.13159},
   year={2022}
 }
 ```
