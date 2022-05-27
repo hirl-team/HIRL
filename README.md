@@ -1,7 +1,7 @@
 # HIRL: A General Framework for Hierarchical Image Representation Learning
 
 This branch provides all the source code to reproduce two transfer learning experiments 
-(**object detection and instance segmentation on COCO**) in the paper [HIRL: A General Framework for Hierarchical Image Representation Learning](https://arxiv.org/pdf/xxx.pdf).
+(**object detection and instance segmentation on COCO**) in the paper [HIRL: A General Framework for Hierarchical Image Representation Learning](https://arxiv.org/pdf/2205.13159.pdf).
 
 <p align="center">
   <img src="resources/framework.png" /> 
@@ -13,7 +13,7 @@ We employ three representative CNN based SSL methods and three representative Vi
 After adapted to the HIRL framework, the effectiveness of all six baseline methods are improved on diverse downstream tasks. 
 
 ## Roadmap
-- [2022/05/26] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
+- [2022/05/27] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
 
 ## TODO
 - [ ] Incorporate more baseline image SSL methods in this codebase, e.g., CAE, MAE, BEiT and SimMIM.
@@ -146,7 +146,7 @@ If you find this repository useful in your research, please cite the following p
 @article{xu2022hirl,
   title={HIRL: A General Framework for Hierarchical Image Representation Learning},
   author={Xu, Minghao and Guo, Yuanfan and Zhu, Xuanyu and Li, Jiawen and Sun, Zhenbang and Tang, Jian and Xu, Yi and Ni, Bingbing},
-  journal={arXiv preprint arXiv:2205.xxx},
+  journal={arXiv preprint arXiv:2205.13159},
   year={2022}
 }
 ```
