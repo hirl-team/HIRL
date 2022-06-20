@@ -64,8 +64,9 @@ class BEiT(nn.Module):
         proj_cls_emb = self.projector(cls_emb)
         return proj_cls_emb
 
-    def forward(self, images, dvae_images, token_mask, return_hooks=False):
+    def forward(self, inputs, return_hooks=False):
         # Get codebook indices and labels for masked image modeling
+        images, dvae_images, token_mask = inputs
         token_mask = token_mask.to(torch.bool)
         with torch.no_grad():
             input_ids = self.dvae_model.get_codebook_indices(dvae_images).flatten(1)
@@ -79,7 +80,7 @@ class BEiT(nn.Module):
         pred = self.vit_model.head(proj_emb[:, 1:][seq_token_mask])
         loss = self.get_loss(pred, target)
 
-        output_dict = dict(loss=loss)
+        output_dict = dict(loss=loss, logit=pred, target=target)
         if return_hooks:
             for k, v in self._embeddings.items():
                 embedding_dict[k] = v
@@ -89,25 +90,29 @@ class BEiT(nn.Module):
 
 
 def beit_base(**kwargs):
-    vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True)
+    vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True,
+                         drop_path_rate=0.1, init_values=0.1)
     dvae_model = DiscreteVAE(image_size=112)
     model = BEiT(vit_model, dvae_model, **kwargs)
     return model
 
 def beit_base_with_proj(**kwargs):
-    vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True)
+    vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True,
+                         drop_path_rate=0.1, init_values=0.1)
     dvae_model = DiscreteVAE(image_size=112)
     model = BEiT(vit_model, dvae_model, num_mlp_layer=2, **kwargs)
     return model
 
 def beit_large(**kwargs):
-    vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True)
+    vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True,
+                          drop_path_rate=0.1, init_values=1e-5)
     dvae_model = DiscreteVAE(image_size=112)
     model = BEiT(vit_model, dvae_model, **kwargs)
     return model
 
 def beit_large_with_proj(**kwargs):
-    vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True)
+    vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True,
+                          drop_path_rate=0.1, init_values=1e-5)
     dvae_model = DiscreteVAE(image_size=112)
     model = BEiT(vit_model, dvae_model, num_mlp_layer=2, **kwargs)
     return model

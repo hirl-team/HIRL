@@ -284,14 +284,14 @@ class LARS(torch.optim.Optimizer):
                 p.add_(mu, alpha=-g['lr'])
 
 
-def get_params_groups(model):
+def get_params_groups(model, skip_list={}):
     regularized = []
     not_regularized = []
     for name, param in model.named_parameters():
         if not param.requires_grad:
             continue
         # we do not regularize biases nor Norm parameters
-        if name.endswith(".bias") or len(param.shape) == 1:
+        if name.endswith(".bias") or len(param.shape) == 1 or name in skip_list:
             not_regularized.append(param)
         else:
             regularized.append(param)
