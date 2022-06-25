@@ -2,7 +2,10 @@ import math
 import random
 import numpy as np
 from PIL import ImageFilter, ImageOps, Image, ImageDraw
+
+import torch
 from torchvision import transforms
+import torchvision.transforms.functional as F
 
 
 class GaussianBlur(object):
@@ -340,13 +343,10 @@ class DataAugmentationBEiT(object):
     """
     Adapted from the official codebase of BEiT: https://github.com/microsoft/unilm/tree/master/beit
     """
-    def __init__(self, args):
-        try:
-            import dall_e
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError("DALL-E is not found. Please install it with `pip install DALL-E`")
 
-        from dall_e.utils import map_pixels
+    logit_laplace_eps = 0.1
+
+    def __init__(self, args):
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
             transforms.RandomHorizontalFlip(p=0.5),
@@ -359,9 +359,14 @@ class DataAugmentationBEiT(object):
         ])
         self.visual_token_transform = transforms.Compose([
             transforms.ToTensor(),
-            map_pixels
+            self.map_pixels
         ])
         self.masked_position_generator = BlockwiseMasking((14, 14), num_masking_patches=75, min_num_patches=16)
+
+    def map_pixels(self, x):
+        if x.dtype != torch.float:
+            raise ValueError('expected input to have type float')
+        return (1 - 2 * self.logit_laplace_eps) * x + self.logit_laplace_eps
 
     def __call__(self, image):
         patch_image, token_image = self.common_transform(image)

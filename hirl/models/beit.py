@@ -91,28 +91,36 @@ class BEiT(nn.Module):
 
 def beit_base(**kwargs):
     vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True,
-                         drop_path_rate=0.1, init_values=0.1)
+                         drop_path_rate=0.1, init_values=0.1,
+                         use_abs_pos_emb=False, use_shared_rel_pos_bias=True, init_mask=True, fix_init_weight=True)
     dvae_model = DiscreteVAE(image_size=112)
+    dvae_model.load_model()
     model = BEiT(vit_model, dvae_model, **kwargs)
     return model
 
 def beit_base_with_proj(**kwargs):
     vit_model = vit_base(patch_size=16, num_classes=8192, masked_im_modeling=True,
-                         drop_path_rate=0.1, init_values=0.1)
+                         drop_path_rate=0.1, init_values=0.1,
+                         use_abs_pos_emb=False, use_shared_rel_pos_bias=True, init_mask=True, fix_init_weight=True)
     dvae_model = DiscreteVAE(image_size=112)
+    dvae_model.load_model()
     model = BEiT(vit_model, dvae_model, num_mlp_layer=2, **kwargs)
     return model
 
 def beit_large(**kwargs):
     vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True,
-                          drop_path_rate=0.1, init_values=1e-5)
+                          drop_path_rate=0.1, init_values=1e-5,
+                          use_abs_pos_emb=False, use_shared_rel_pos_bias=True, init_mask=True, fix_init_weight=True)
     dvae_model = DiscreteVAE(image_size=112)
+    dvae_model.load_model()
     model = BEiT(vit_model, dvae_model, **kwargs)
     return model
 
 def beit_large_with_proj(**kwargs):
     vit_model = vit_large(patch_size=16, num_classes=8192, masked_im_modeling=True,
-                          drop_path_rate=0.1, init_values=1e-5)
+                          drop_path_rate=0.1, init_values=1e-5,
+                          use_abs_pos_emb=False, use_shared_rel_pos_bias=True, init_mask=True, fix_init_weight=True)
     dvae_model = DiscreteVAE(image_size=112)
+    dvae_model.load_model()
     model = BEiT(vit_model, dvae_model, num_mlp_layer=2, **kwargs)
     return model
