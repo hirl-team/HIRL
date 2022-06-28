@@ -26,6 +26,7 @@ class BEiT(nn.Module):
 
         self.vit_model = vit_model
         self.dvae_model = dvae_model
+        self.backbone = self.vit_model
         hidden_dim = vit_model.head.weight.shape[1]
         if num_mlp_layer > 0:
             self.projector = layers.MLP(hidden_dim, [hidden_dim] * num_mlp_layer,

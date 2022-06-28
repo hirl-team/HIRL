@@ -58,10 +58,11 @@ def extract_feature_pipeline(args):
         model = resnet.__dict__[args.arch](num_classes=0)
         model.fc = nn.Identity()
     elif args.arch in vt.__dict__.keys():
-        model = vt.__dict__[args.arch](
-            patch_size=args.patch_size, 
-            num_classes=0,
-            use_mean_pooling=False)
+        if args.rel_pos_emb:
+            model = vt.__dict__[args.arch](patch_size=args.patch_size, num_classes=0, use_mean_pooling=False,
+                                           use_abs_pos_emb=False, use_shared_rel_pos_bias=True)
+        else:
+            model = vt.__dict__[args.arch](patch_size=args.patch_size, num_classes=0, use_mean_pooling=False)
     else:
         print(f"Architecture {args.arch} non supported")
         sys.exit(1)
@@ -264,6 +265,8 @@ def parse_args_knn():
     parser.add_argument('--use_cuda', default=1, type=int,
         help="Store features in GPU.")
     parser.add_argument('--arch', default='resnet50', type=str, help='Architecture')
+    parser.add_argument('--rel_pos_emb', default=False, action='store_true',
+                        help='Use relative position embedding in ViT.')
     parser.add_argument("--checkpoint_key", default="state_dict", type=str,
         help='Key to use in the checkpoint')
     parser.add_argument('--patch_size', default=16, type=int, help='Patch resolution of the model.')
