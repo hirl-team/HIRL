@@ -14,9 +14,9 @@ patch_size: 16
 window_size: 7
 drop_path_rate: 0.1
 
-lr: 4.0e-3
+lr: 8.0e-4
 start_lr: 1.0e-6
-min_lr: 1.0e-6
+min_lr: 0.0
 warmup_epochs: 20
 
 optimizer:
@@ -43,7 +43,7 @@ recount: 1
 resplit: False
 trunc_normal: True
 
-use_mean_pooling: False
+use_mean_pooling: True
 
 data_path: "./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC/"
 

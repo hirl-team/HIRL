@@ -18,7 +18,7 @@ Please move to that branch for reproducing the results on these two tasks.
 
 ## Roadmap
 - [2022/05/27] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
-- [2022/07/08] Release all source code and model weights for BEiT and HIRL-BEiT!
+- [2022/07/07] Release all source code and model weights for BEiT and HIRL-BEiT!
 
 ## TODO
 - [ ] Incorporate more baseline image SSL methods in this codebase. **To add:** CAE, MAE, SimMIM, *etc.*
