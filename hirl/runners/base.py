@@ -439,13 +439,14 @@ class StandardDownstreamRunner(BaseRunner):
         specific tricks:
         - use_syncbn: set True for swav/hirl/mocov2...semisup evaluation.
         """
+        arch_kwargs = args.get("arch_kwargs", dict())
         if args.arch in vt.__dict__.keys():
             model = vt.__dict__[args.arch](
                 patch_size=args.patch_size,
                 use_mean_pooling=args.use_mean_pooling,
                 drop_path_rate=args.drop_path_rate,
                 num_classes=args.num_classes,
-                use_head=True
+                use_head=True, **arch_kwargs
             )
         elif args.arch in resnet.__dict__.keys():
             model = resnet.__dict__[args.arch](num_classes=args.num_classes)

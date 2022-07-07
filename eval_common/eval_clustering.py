@@ -113,10 +113,11 @@ def run(args):
         model = resnet.__dict__[args.arch](num_classes=0)
         model.fc = nn.Identity()
     elif args.arch in vt.__dict__.keys():
-        model = vt.__dict__[args.arch](
-            patch_size=args.patch_size, 
-            num_classes=0,
-            use_mean_pooling=False)
+        if args.rel_pos_emb:
+            model = vt.__dict__[args.arch](patch_size=args.patch_size, num_classes=0, use_mean_pooling=False,
+                                           use_abs_pos_emb=False, use_shared_rel_pos_bias=True)
+        else:
+            model = vt.__dict__[args.arch](patch_size=args.patch_size, num_classes=0, use_mean_pooling=False)
     else:
         print(f"Architecture {args.arch} non supported")
         sys.exit(1)
@@ -170,6 +171,8 @@ def parse_args():
     parser.add_argument("--model_prefix", type=str, default="model")
     parser.add_argument('--pretrained', default='', type=str, help="Path to pretrained weights to evaluate.")
     parser.add_argument("--num_classes", type=str, default="1000")
+    parser.add_argument('--rel_pos_emb', default=False, action='store_true',
+                        help='Use relative position embedding in ViT.')
     parser.add_argument("--batch_size", "-bs", type=int, default=64)
     parser.add_argument('--data', type=str, default="./datasets/Imagenet1K/ILSVRC/Data/CLS-LOC")
     parser.add_argument("--local_rank", type=int, default=0)

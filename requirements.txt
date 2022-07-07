@@ -16,3 +16,4 @@ six==1.15.0
 timm==0.4.12
 tqdm
 PyYAML
+DALL-E

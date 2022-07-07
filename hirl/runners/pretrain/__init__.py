@@ -5,3 +5,4 @@ from .moco import *
 from .mocov3 import *
 from .simsiam import *
 from .swav import *
+from .beit import *

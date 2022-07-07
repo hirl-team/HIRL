@@ -18,29 +18,32 @@ Please move to that branch for reproducing the results on these two tasks.
 
 ## Roadmap
 - [2022/05/27] The initial release! We release all source code for pre-training and downstream evaluation. We release all pre-trained model weights for (HIRL-)MoCo v2, (HIRL-)SimSiam, (HIRL-)SwAV, (HIRL-)MoCo v3, (HIRL-)DINO and (HIRL-)iBOT.
+- [2022/07/07] Release all source code and model weights for BEiT and HIRL-BEiT!
 
 ## TODO
-- [ ] Incorporate more baseline image SSL methods in this codebase, e.g., CAE, MAE, BEiT and SimMIM.
-- [ ] Adapt more baselines into the HIRL framework, e.g., HIRL-CAE, HIRL-MAE, HIRL-BEiT and HIRL-SimMIM.  
+- [ ] Incorporate more baseline image SSL methods in this codebase. **To add:** CAE, MAE, SimMIM, *etc.*
+- [ ] Adapt more baselines into the HIRL framework. **To add:** HIRL-CAE, HIRL-MAE, HIRL-SimMIM, *etc.*
 - [ ] Explore other ways to learn hierarchical image representations, except for semantic path discrimination.
 
 ## Benchmark and Model Zoo
-| Method | Arch. | Epochs | Batch Size | KNN | Linear | Fine-tune | Url | Config |
-|---------------|---------|:------:|:------:|:--------:|:--------:|:--------:|-------|---------|
-| MoCo v2 | ResNet-50 | 200 | 256 | 55.74 | 67.60 | 73.14 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/mocov2_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/mocov2_resnet50_200eps.yaml) |
-| HIRL-MoCo v2 | ResNet-50 | 200 | 256 | 57.56 | 68.40 | 73.86 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_mocov2_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_mocov2_resnet50_200eps.yaml) |
-| SimSiam | ResNet-50 | 200 | 512 | 60.17 | 69.74 | 72.25 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/simsiam_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/simsiam_resnet50_200eps.yaml) |
-| HIRL-SimSiam | ResNet-50 | 200 | 512 | 62.68 | 69.81 | 72.88 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_simsiam_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_simsiam_resnet50_200eps.yaml) |
-| SwAV | ResNet-50 | 200 | 4096 | 63.45 | 72.68 | 76.82 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/swav_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/swav_resnet50_200eps.yaml) |
-| HIRL-SwAV | ResNet-50 | 200 | 4096 | 63.99 | 73.43 | 77.18 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_swav_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_swav_resnet50_200eps.yaml) |
-| SwAV | ResNet-50 | 800 | 4096 | 64.84 | 73.36 | 77.77 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/swav_800eps_backbone.pth) | [cfg](configs/pretrain/baseline/swav_resnet50_800eps.yaml) |
-| HIRL-SwAV | ResNet-50 | 800 | 4096 | 65.43 | 74.80 | 78.05 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_swav_800eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_swav_resnet50_800eps.yaml) |
-| MoCo v3 | ViT-B/16 | 400 | 4096 | 71.29 | 76.44 | 81.94 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/mocov3_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/mocov3_vit_base_400eps.yaml) |
-| HIRL-MoCo v3 | ViT-B/16 | 400 | 4096 | 71.68 | 75.12 | 82.19 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_mocov3_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_mocov3_vit_base_400eps.yaml) |
-| DINO | ViT-B/16 | 400 | 1024 | 76.01 | 78.07 | 82.09 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/dino_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/dino_vit_base_400eps.yaml) |
-| HIRL-DINO | ViT-B/16 | 400 | 1024 | 76.84 | 78.32 | 83.24 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_dino_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_dino_vit_base_400eps.yaml) |
-| iBOT | ViT-B/16 | 400 | 1024 | 76.64 | 79.00 | 82.47 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/ibot_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/ibot_vit_base_400eps.yaml) |
-| HIRL-iBOT | ViT-B/16 | 400 | 1024 | 77.49 | 79.36 | 83.37 | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_ibot_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_ibot_vit_base_400eps.yaml) |
+| Method       | Arch. | Epochs | Batch Size |  KNN  | Linear | Fine-tune | Url | Config                                                         |
+|--------------|---------|:------:|:----------:|:-----:|:------:|:---------:|-------|----------------------------------------------------------------|
+| MoCo v2      | ResNet-50 | 200 |    256     | 55.74 | 67.60  |   73.14   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/mocov2_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/mocov2_resnet50_200eps.yaml)   |
+| HIRL-MoCo v2 | ResNet-50 | 200 |    256     | 57.56 | 68.40  |   73.86   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_mocov2_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_mocov2_resnet50_200eps.yaml)  |
+| SimSiam      | ResNet-50 | 200 |    512     | 60.17 | 69.74  |   72.25   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/simsiam_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/simsiam_resnet50_200eps.yaml)  |
+| HIRL-SimSiam | ResNet-50 | 200 |    512     | 62.68 | 69.81  |   72.88   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_simsiam_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_simsiam_resnet50_200eps.yaml) |
+| SwAV         | ResNet-50 | 200 |    4096    | 63.45 | 72.68  |   76.82   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/swav_200eps_backbone.pth) | [cfg](configs/pretrain/baseline/swav_resnet50_200eps.yaml)     |
+| HIRL-SwAV    | ResNet-50 | 200 |    4096    | 63.99 | 73.43  |   77.18   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_swav_200eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_swav_resnet50_200eps.yaml)    |
+| SwAV         | ResNet-50 | 800 |    4096    | 64.84 | 73.36  |   77.77   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/swav_800eps_backbone.pth) | [cfg](configs/pretrain/baseline/swav_resnet50_800eps.yaml)     |
+| HIRL-SwAV    | ResNet-50 | 800 |    4096    | 65.43 | 74.80  |   78.05   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_swav_800eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_swav_resnet50_800eps.yaml)    |
+| MoCo v3      | ViT-B/16 | 400 |    4096    | 71.29 | 76.44  |   81.94   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/mocov3_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/mocov3_vit_base_400eps.yaml)   |
+| HIRL-MoCo v3 | ViT-B/16 | 400 |    4096    | 71.68 | 75.12  |   82.19   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_mocov3_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_mocov3_vit_base_400eps.yaml)  |
+| DINO         | ViT-B/16 | 400 |    1024    | 76.01 | 78.07  |   82.09   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/dino_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/dino_vit_base_400eps.yaml)     |
+| HIRL-DINO    | ViT-B/16 | 400 |    1024    | 76.84 | 78.32  |   83.24   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_dino_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_dino_vit_base_400eps.yaml)    |
+| iBOT         | ViT-B/16 | 400 |    1024    | 76.64 | 79.00  |   82.47   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/ibot_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/ibot_vit_base_400eps.yaml)     |
+| HIRL-iBOT    | ViT-B/16 | 400 |    1024    | 77.49 | 79.36  |   83.37   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_ibot_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_ibot_vit_base_400eps.yaml)    |
+| BEiT         | ViT-B/16 | 400 |    2048    |   /   |   /    |   83.10   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/beit_400eps_backbone.pth) | [cfg](configs/pretrain/baseline/beit_base_400eps.yaml)         |
+| HIRL-BEiT    | ViT-B/16 | 400 |    2048    |   /   |   /    |   83.41   | [model](https://hirlmodels.s3.us-east-2.amazonaws.com/hirl_beit_400eps_backbone.pth) | [cfg](configs/pretrain/hirl/hirl_beit_base_400eps.yaml)        |
 
 ## Installation
 This repository is officially tested with the following environments:
@@ -149,7 +152,7 @@ Perform KNN evaluation on a pretrained model:
 ```
 python3 launch.py --launch ./eval_common/eval_knn.py --backbone_prefix backbone --pretrained [pretrained model file in .pth]
 ```
-*Note*: set `--backbone_prefix model.backbone` for HIRL based models. Set `--arch vit_base` for MoCo v3, DINO and iBOT.
+*Note*: set `--backbone_prefix model.backbone` for HIRL based models. Set `--arch vit_base` for MoCo v3, DINO, iBOT and BEiT.
 
 ### Linear classification
 Perform ImageNet linear classification based on a pretrained model (e.g., MoCo v2):
@@ -211,7 +214,7 @@ Perform clustering evaluation on a baseline model:
 python3 launch.py --launch ./eval_common/eval_clustering.py \
 --backbone_prefix backbone --pretrained [pretrained model file in .pth]
 ```
-*Note*: set `--backbone_prefix model.backbone` for HIRL based models. Set `--arch vit_base` for MoCo v3, DINO and iBOT.
+*Note*: set `--backbone_prefix model.backbone` for HIRL based models. Set `--arch vit_base` for MoCo v3, DINO, iBOT and BEiT.
 
 ### Object Detection & Instance Segmentation
 See [det-seg](https://github.com/hirl-team/HIRL/tree/det-seg) branch.
@@ -239,3 +242,4 @@ The baseline methods in this codebase are based on the following open-resource p
 - [MoCo V3](https://github.com/facebookresearch/moco-v3)
 - [DINO](https://github.com/facebookresearch/dino)
 - [iBOT](https://github.com/bytedance/ibot)
+- [BEiT](https://github.com/microsoft/unilm/tree/master/beit)

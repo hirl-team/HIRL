@@ -62,12 +62,14 @@ class Attention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def forward(self, x):
+    def forward(self, x, rel_pos_bias=None):
         B, N, C = x.shape
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
 
         attn = (q @ k.transpose(-2, -1)) * self.scale
+        if rel_pos_bias is not None:
+            attn = attn + rel_pos_bias
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
 
@@ -95,8 +97,8 @@ class Block(nn.Module):
         else:
             self.gamma_1, self.gamma_2 = None, None
 
-    def forward(self, x, return_attention=False):
-        y, attn = self.attn(self.norm1(x))
+    def forward(self, x, return_attention=False, rel_pos_bias=None):
+        y, attn = self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias)
         if return_attention:
             return attn
         if self.gamma_1 is None:
@@ -133,13 +135,54 @@ class PatchEmbed(nn.Module):
         x = self.norm(x)
         return x
 
+
+class RelativePositionBias(nn.Module):
+    """
+    Relative position bias adapted from BEiT: https://github.com/microsoft/unilm/blob/master/beit/modeling_finetune.py
+    """
+    def __init__(self, window_size, num_heads):
+        super().__init__()
+        self.window_size = window_size
+        self.num_relative_distance = (2 * window_size[0] - 1) * (2 * window_size[1] - 1) + 3
+        self.relative_position_bias_table = nn.Parameter(
+            torch.zeros(self.num_relative_distance, num_heads))  # 2*Wh-1 * 2*Ww-1, nH
+        # cls to token & token 2 cls & cls to cls
+
+        # get pair-wise relative position index for each token inside the window
+        coords_h = torch.arange(window_size[0])
+        coords_w = torch.arange(window_size[1])
+        coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
+        coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
+        relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
+        relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
+        relative_coords[:, :, 0] += window_size[0] - 1  # shift to start from 0
+        relative_coords[:, :, 1] += window_size[1] - 1
+        relative_coords[:, :, 0] *= 2 * window_size[1] - 1
+        relative_position_index = \
+            torch.zeros(size=(window_size[0] * window_size[1] + 1,) * 2, dtype=relative_coords.dtype)
+        relative_position_index[1:, 1:] = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
+        relative_position_index[0, 0:] = self.num_relative_distance - 3
+        relative_position_index[0:, 0] = self.num_relative_distance - 2
+        relative_position_index[0, 0] = self.num_relative_distance - 1
+
+        self.register_buffer("relative_position_index", relative_position_index)
+
+    def forward(self):
+        relative_position_bias = \
+            self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
+                self.window_size[0] * self.window_size[1] + 1,
+                self.window_size[0] * self.window_size[1] + 1, -1)  # Wh*Ww,Wh*Ww,nH
+        return relative_position_bias.permute(2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
+
+
 class VisionTransformer(nn.Module):
     """ Vision Transformer """
     def __init__(self, img_size=[224], patch_size=16, in_chans=3, num_classes=0, embed_dim=768, depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., embed_layer=PatchEmbed, norm_layer=partial(nn.LayerNorm, eps=1e-6), return_all_tokens=False, 
                  init_values=0, use_mean_pooling=False, masked_im_modeling=False, use_head=False, 
-                 sincos_pos_emb=False, mocov3_init=False, random_patch_projection=False):
+                 sincos_pos_emb=False, mocov3_init=False, random_patch_projection=False,
+                 use_abs_pos_emb=True, use_shared_rel_pos_bias=False, init_mask=False, fix_init_weight=False):
         super().__init__()
         self.num_features = self.embed_dim = embed_dim
         self.return_all_tokens = return_all_tokens
@@ -149,8 +192,16 @@ class VisionTransformer(nn.Module):
         num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
+        if use_abs_pos_emb:
+            self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
+        else:
+            self.pos_embed = None
         self.pos_drop = nn.Dropout(p=drop_rate)
+
+        if use_shared_rel_pos_bias:
+            self.rel_pos_bias = RelativePositionBias(window_size=self.patch_embed.grid_size, num_heads=num_heads)
+        else:
+            self.rel_pos_bias = None
 
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]  # stochastic depth decay rule
         self.blocks = nn.ModuleList([
@@ -166,14 +217,19 @@ class VisionTransformer(nn.Module):
         # Classifier head
         self.head = nn.Linear(embed_dim, num_classes) if num_classes > 0 else nn.Identity()
 
-        trunc_normal_(self.pos_embed, std=.02)
+        if self.pos_embed is not None:
+            trunc_normal_(self.pos_embed, std=.02)
         trunc_normal_(self.cls_token, std=.02)
         self.apply(self._init_weights)
+        if fix_init_weight:
+            self.fix_init_weight()
 
         # masked image modeling
         self.masked_im_modeling = masked_im_modeling
         if masked_im_modeling:
             self.masked_embed = nn.Parameter(torch.zeros(1, embed_dim))
+            if init_mask:
+                trunc_normal_(self.masked_embed, std=.02)
 
         # head usage
         self.use_head = use_head
@@ -185,6 +241,14 @@ class VisionTransformer(nn.Module):
         # weight initialization following MoCo v3
         if mocov3_init:
             self._mocov3_weight_init(random_patch_projection=random_patch_projection)
+
+    def fix_init_weight(self):
+        def rescale(param, layer_id):
+            param.div_(math.sqrt(2.0 * layer_id))
+
+        for layer_id, layer in enumerate(self.blocks):
+            rescale(layer.attn.proj.weight.data, layer_id + 1)
+            rescale(layer.mlp.fc2.weight.data, layer_id + 1)
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
@@ -275,7 +339,8 @@ class VisionTransformer(nn.Module):
         x = torch.cat((cls_tokens, x), dim=1)
 
         # add positional encoding to each token
-        x = x + self.interpolate_pos_encoding(x, w, h)
+        if self.pos_embed is not None:
+            x = x + self.interpolate_pos_encoding(x, w, h)
 
         return self.pos_drop(x)
 
@@ -283,8 +348,9 @@ class VisionTransformer(nn.Module):
         # mim   
         x = self.prepare_tokens(x, mask=mask)
 
+        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
-            x = blk(x)
+            x = blk(x, rel_pos_bias=rel_pos_bias)
         
         if self.use_mean_embedding: # apply norm layer on mean pooling
             x[:, 0] = self.fc_norm(x[:, 1:, :].mean(1))
@@ -314,8 +380,9 @@ class VisionTransformer(nn.Module):
         x = self.prepare_tokens(x)
         # we return the output tokens from the `n` last blocks
         output = []
+        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for i, blk in enumerate(self.blocks):
-            x = blk(x)
+            x = blk(x, rel_pos_bias=rel_pos_bias)
             if len(self.blocks) - i <= n:
                 output.append(self.norm(x))
         return output
